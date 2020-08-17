@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package Config;
+
+
+service ConfigService {
+    rpc Config (ConfigRequest) returns (ConfigResponse) {}
+}
+
+message ConfigRequest {
+    string mode = 1;
+}
+
+message ConfigResponse {
+    string config = 1;
+}
+
