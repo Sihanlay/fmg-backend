@@ -1,21 +1,20 @@
-
 package main
 
 import (
-_ "github.com/go-sql-driver/mysql"
-"github.com/kataras/iris"
-"github.com/kataras/iris/hero"
-"grpc-demo/config"
-"grpc-demo/core/cache"
-viewbase "grpc-demo/core/view"
-"grpc-demo/models/db"
-"grpc-demo/utils"
-"grpc-demo/utils/middlewares"
-"grpc-demo/view"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/kataras/iris"
+	"github.com/kataras/iris/hero"
+	"grpc-demo/config"
+	"grpc-demo/core/cache"
+	viewbase "grpc-demo/core/view"
+	"grpc-demo/models/db"
+	"grpc-demo/utils"
+	"grpc-demo/utils/middlewares"
+	"grpc-demo/views"
 )
 
 func initRouter(app *iris.Application) {
-	view.RegisterAccountRouters(app)
+	views.RegisterAccountRouters(app)
 }
 
 func main() {
@@ -37,11 +36,8 @@ func main() {
 	//queue.InitTaskQueue()
 	// 启动系统
 	app.Run(iris.Addr(":80"), iris.WithoutServerError(iris.ErrServerClosed))
+
 }
-
-
-
-
 
 //func main() {
 //	// 初始化配置
@@ -55,8 +51,6 @@ func main() {
 //	}
 //    fmt.Println("hello")
 //	s := grpc.NewServer(grpc.UnaryInterceptor(interceptor.AbnormalHandle))
-//	Address.RegisterAddressInServer(s, &view.AddressHandle{})
+//	Address.RegisterAddressInServer(s, &views.AddressHandle{})
 //	s.Serve(lis)
 //}
-
-

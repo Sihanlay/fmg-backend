@@ -48,8 +48,7 @@ Conn:
 	Driver.SingularTable(true)
 
 	Driver.AutoMigrate(
-		// 商品
-
+		&Account{},
 	)
 }
 
