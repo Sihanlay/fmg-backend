@@ -1,24 +1,25 @@
 package db
 
 //地址
-type Address struct{
-	ID int `gorm:"primary_key" json:"id"`
-
+type Address struct {
+	ID        int     `gorm:"primary_key" json:"id"`
+	Account   Account `json:"account" gorm:"ForeignKey:Account"`
+	AccountId int     `json:"account_id"`
 	//详细地址
-	Name string `json:"name" gorm:"not null;type:text"`
+	Detail string `json:"name" gorm:"not null;type:text"`
 
 	//国
-	Country Country `json:"country" gorm:"ForeignKey:CountryId"`
-	CountryId int `json:"country_id"`
+	Country   Country `json:"country" gorm:"ForeignKey:CountryId"`
+	CountryId int     `json:"country_id"`
 	//省
-	Province Province `json:"Province" gorm:"ForeignKey:ProvinceID"`
-	ProvinceID int `json:"province_id"`
+	Province   Province `json:"Province" gorm:"ForeignKey:ProvinceID"`
+	ProvinceID int      `json:"province_id"`
 	//城市id
-	City City `json:"City" gorm:"ForeignKey:CityID"`
-	CityID int `json:"city_id"`
+	City   City `json:"City" gorm:"ForeignKey:CityID"`
+	CityID int  `json:"city_id"`
 
-	District District `json:"District" gorm:"ForeignKey:DistrictID"`
-	DistrictID int `json:"District"`
+	District   District `json:"District" gorm:"ForeignKey:DistrictID"`
+	DistrictID int      `json:"District"`
 	// 创建时间
 	CreateTime int64 `json:"create_time"`
 
@@ -27,7 +28,7 @@ type Address struct{
 }
 
 //城市
-type Country struct{
+type Country struct {
 	ID int `gorm:"primary_key" json:"id"`
 
 	// 标题
@@ -36,8 +37,7 @@ type Country struct{
 	Code int `json:"country_code" gorm:"not null;index"`
 }
 
-
-type Province struct{
+type Province struct {
 	ID int `gorm:"primary_key" json:"id"`
 
 	//国家id
@@ -49,8 +49,7 @@ type Province struct{
 	Name string `json:"Provincename"`
 }
 
-
-type City struct{
+type City struct {
 	ID int `gorm:"primary_key" json:"id"`
 
 	CountryID int `json:"Province_id" gorm:"not null;index"`

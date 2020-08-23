@@ -48,7 +48,7 @@ Conn:
 	Driver.SingularTable(true)
 
 	Driver.AutoMigrate(
-		&Account{},
+		&Account{}, &Address{},
 	)
 }
 

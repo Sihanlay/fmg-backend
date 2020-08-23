@@ -1,6 +1,7 @@
 package account
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
@@ -12,7 +13,6 @@ import (
 	"grpc-demo/models/db"
 	"grpc-demo/utils"
 	paramsUtils "grpc-demo/utils/params"
-	qiniuUtils "grpc-demo/utils/qiniu"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -29,11 +29,16 @@ type WXLoginResp struct {
 
 func Wxlogin(js_code string) (*WXLoginResp, error) {
 
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+
 	Code2SessURL := "https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={code}&grant_type=authorization_code"
 	Code2SessURL = strings.Replace(Code2SessURL, "{appid}", "wx1328c016e69fdf9f", -1)
 	Code2SessURL = strings.Replace(Code2SessURL, "{secret}", "498352d438f07243860b8dd54ef946f0", -1)
 	Code2SessURL = strings.Replace(Code2SessURL, "{code}", js_code, -1)
-	resp, err := http.Get(Code2SessURL)
+	resp, err := client.Get(Code2SessURL)
 	////关闭资源
 	if resp != nil && resp.Body != nil {
 		defer resp.Body.Close()
@@ -41,7 +46,6 @@ func Wxlogin(js_code string) (*WXLoginResp, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
 	wxResp := WXLoginResp{}
 	err = json.NewDecoder(resp.Body).Decode(&wxResp)
@@ -56,7 +60,7 @@ func Wxlogin(js_code string) (*WXLoginResp, error) {
 func Login(c iris.Context, auth authbase.AuthAuthorization) {
 
 	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(c))
-	c.Text(qiniuUtils.GetUploadToken())
+	//c.Text(qiniuUtils.GetUploadToken())
 	//判断小程序登录
 	mode := c.GetHeader(constants.ApiMode)
 
@@ -64,8 +68,9 @@ func Login(c iris.Context, auth authbase.AuthAuthorization) {
 		code := params.Str("js_code", "js_code") //  获取code
 		// 根据code获取 openID 和 session_key
 		wxLoginResp, err := Wxlogin(code)
+		fmt.Println(err)
 		if err != nil {
-			c.JSON(AccountException.AccountNotFount())
+			panic(AccountException.AccountNotFount())
 			return
 		}
 		//判断openid是否存在数据库
@@ -81,6 +86,7 @@ func Login(c iris.Context, auth authbase.AuthAuthorization) {
 				OpenId: wxLoginResp.OpenId,
 				//Nickname: nickname,
 			}
+			db.Driver.Create(&account)
 		}
 		token := auth.SetCookie(account.Id)
 		c.JSON(iris.Map{

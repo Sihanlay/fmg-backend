@@ -4,19 +4,27 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/hero"
 	"grpc-demo/views/account"
+	"grpc-demo/views/address"
 )
 
 func RegisterAccountRouters(app *iris.Application) {
 
-	// 题目路由
-	placeTagRouter := app.Party("account/info")
+	// 账户信息路由
+	accountRouter := app.Party("account/info")
 
 	//placeTagRouter.Post("", hero.Handler(goods_tag.CreatePlaceTag))
-	placeTagRouter.Get("/list", hero.Handler(account.GetAccountList))
-	placeTagRouter.Put("/{uid:int}", hero.Handler(account.PutAccount))
-	placeTagRouter.Post("/_mget", hero.Handler(account.MgetAccount))
+	accountRouter.Get("/list", hero.Handler(account.GetAccountList))
+	accountRouter.Put("/{uid:int}", hero.Handler(account.PutAccount))
+	accountRouter.Post("/_mget", hero.Handler(account.MgetAccount))
 
 	app.Party("account/").Post("/login/", hero.Handler(account.Login))
+
+	//地址路由
+	addressRouter := app.Party("address/info")
+	addressRouter.Post("/{uid:int}", hero.Handler(address.CreatAddress))
+	addressRouter.Get("/{uid:int}", hero.Handler(address.GetAddress))
+	addressRouter.Put("/{aid:int}", hero.Handler(address.PutAddress))
+
 	//placeTagRouter.Put("/{pid:int}", hero.Handler(goods_tag.PutPlaceTag))
 	//placeTagRouter.Delete("/{pid:int}", hero.Handler(goods_tag.DeletePlaceTag))
 	//placeTagRouter.Post("/_mget", hero.Handler(goods_tag.MgetPlaceTag))
