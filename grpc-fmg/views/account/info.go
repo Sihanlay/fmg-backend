@@ -19,7 +19,7 @@ import (
 
 func GetAccountList(ctx iris.Context, auth authbase.AuthAuthorization) {
 
-	//auth.CheckAdmin()
+	auth.CheckAdmin()
 
 	var lists []struct {
 		Id         int   `json:"id"`
@@ -48,7 +48,7 @@ func GetAccountList(ctx iris.Context, auth authbase.AuthAuthorization) {
 
 func PutAccount(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
 
-	//auth.CheckLogin()
+	auth.CheckLogin()
 	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
 	logic := accountLogic.NewAccountLogic(auth, aid)
 	account := logic.AccountModel()

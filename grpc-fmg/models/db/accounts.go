@@ -2,8 +2,7 @@ package db
 
 // 用户主账户表
 type Account struct {
-
-	Id        int `gorm:"primary_key" json:"id"`
+	Id int `gorm:"primary_key" json:"id"`
 
 	// 昵称
 	Nickname string `json:"nickname"`
@@ -44,6 +43,15 @@ type Account struct {
 	// 一句话签名
 	Motto string `json:"motto"`
 
+	//省
+	Province string `json:"province"`
+
+	//市
+	City string `json:"city"`
+
+	//国
+	Country string `json:"country"`
+
 	// 设置 保留字段
 	Options string `json:"options" gorm:"default:''"`
 
@@ -53,12 +61,9 @@ type Account struct {
 	// 更新时间
 	UpdateTime int64 `json:"update_time"`
 
-
 	OpenId string `json:"open_id"`
 
-
 	SessionKey string `json:"session_key"`
-
 
 	// ----------------------------------------
 }
@@ -92,8 +97,7 @@ type Account struct {
 
 //用户积分表
 type Scores struct {
-
-	Id     int `gorm:"primary_key" json:"id"`
+	Id int `gorm:"primary_key" json:"id"`
 
 	//积分
 	Scores int64 `json:"scores"`
@@ -102,7 +106,7 @@ type Scores struct {
 	AccountId int `json:"account_id"`
 
 	//积分来源 1：订单 2：评价 3：订单取消返还 4：拒收返还
-	ScoresSrc  int16 `json:"scoresSrc"`
+	ScoresSrc int16 `json:"scoresSrc"`
 
 	//积分来源订单
 	OrderId int `json:"orderid"`
@@ -122,14 +126,13 @@ type Scores struct {
 
 //用户优惠券表
 type Cards struct {
-
-	Id     int `gorm:"primary_key" json:"id"`
+	Id int `gorm:"primary_key" json:"id"`
 
 	// 用户id
 	AccountId int `json:"account_id"`
 
 	// 卡券号
-	CardNo string  `json:"cardno"`
+	CardNo string `json:"cardno"`
 
 	// 订单ID
 	OrderId int `json:"orderid"`
@@ -142,19 +145,31 @@ type Cards struct {
 
 	// 创建时间
 	CreateTime int64 `json:"create_time"`
-
 }
+
 //用户购物车表
 type AccountCar struct {
-	Id        int `gorm:"primary_key" json:"id"`
+	Id int `gorm:"primary_key" json:"id"`
 
-	AccountId int `json:"account_id" `
-	Account Account `json:"-" gorm:"ForeignKey:AccountId"`
+	AccountId int     `json:"account_id" `
+	Account   Account `json:"-" gorm:"ForeignKey:AccountId"`
 
-	GoodsId int `json:"goods_id"`
-	Goods Goods `json:"-" gorm:"ForeignKey:GoodsId"`
+	GoodsId int   `json:"goods_id"`
+	Goods   Goods `json:"-" gorm:"ForeignKey:GoodsId"`
+
+	GoodsCount int `json:"goods_count" gorm:"default:0"`
+
+	GoodsSpecification string `json:"goods_specification"`
+
+	GoodsSpecificationId int `json:"goods_specification_id"`
+
+	GoodsName string `json:"goods_name"`
+
+	GoodsPrice int `json:"goods_price"`
+
+	IsCheck bool `json:"is_check" gorm:"default:true"`
+
+	Picture string `json:"picture"`
 
 	CreateTime int64 `json:"create_time"`
 }
-
-

@@ -20,6 +20,10 @@ type Address struct {
 
 	District   District `json:"District" gorm:"ForeignKey:DistrictID"`
 	DistrictID int      `json:"District"`
+
+	Phone string `json:"phone"`
+
+	Name string `json:"name"`
 	// 创建时间
 	CreateTime int64 `json:"create_time"`
 
