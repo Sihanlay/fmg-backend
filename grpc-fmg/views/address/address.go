@@ -119,6 +119,27 @@ func PutAddress(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
 		newCity := params.Int("city_id", "新地址")
 		address.CityID = newCity
 	}
+	if params.Has("name") {
+		name := params.Str("name", "新地址")
+		address.Name = name
+	}
+	if params.Has("district_id") {
+		district_id := params.Int("district_id", "新地址")
+		address.DistrictID = district_id
+	}
+	if params.Has("phone") {
+		province := params.Int("province_id", "province_id")
+		address.ProvinceID = province
+	}
+	if params.Has("detail") {
+		detail := params.Str("detail", "新地址")
+		address.Detail = detail
+	}
+	if params.Has("phone") {
+		phone := params.Int("phone", "新地址")
+		address.CityID = phone
+	}
+
 	params.Diff(address)
 	ctx.JSON(iris.Map{
 		"id": address.ID,

@@ -163,13 +163,13 @@ type AccountCar struct {
 
 	GoodsSpecificationId int `json:"goods_specification_id"`
 
-	GoodsName string `json:"goods_name"`
-
-	GoodsPrice int `json:"goods_price"`
+	//GoodsName string `json:"goods_name"`
+	//
+	//GoodsPrice int `json:"goods_price"`
 
 	IsCheck bool `json:"is_check" gorm:"default:true"`
 
-	Picture string `json:"picture"`
+	//Picture string `json:"picture"`
 
 	CreateTime int64 `json:"create_time"`
 }
