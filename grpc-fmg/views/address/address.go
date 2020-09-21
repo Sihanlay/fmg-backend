@@ -3,11 +3,12 @@ package address
 import (
 	_ "context"
 	"fmt"
-	"github.com/kataras/iris"
 	authbase "grpc-demo/core/auth"
 	accountException "grpc-demo/exceptions/account"
 	"grpc-demo/models/db"
 	paramsUtils "grpc-demo/utils/params"
+
+	"github.com/kataras/iris"
 
 	//"encoding/json"
 	//"errors"
@@ -61,35 +62,31 @@ func MGetAddress(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
 }
 
 type Result struct {
-	cityName     string
-	provinceName string
-	districName  string
+	CityName     string `json:"city_name"`
+	ProvinceName string `json:"province_name"`
+	DistricName  string `json:"distric_name"`
 }
 
 func GetAddress(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
 	var address db.Address
-	err := db.Driver.GetOne("address", aid, &address)
-	if err != nil {
-		fmt.Print(err)
-		panic(accountException.AddressNotFount())
+	db.Driver.Where("id = ?", aid).First(&address)
+	/*
+		err := db.Driver.GetOne("address", aid, &address)
+		if err != nil {
+			fmt.Print(err)
+			panic(accountException.AddressNotFount())
+		}
+	*/
+
+	var results []Result
+	db.Driver.Table("city, province, district").Debug().Select("city.name as city_name, province.name as province_name ,district.name as distric_name").Where("province.id = ? and city.id = ? and district.id = ?", address.ProvinceID, address.CityID, address.DistrictID).Find(&results)
+	fmt.Println(results)
+
+	if len(results) < 1 {
+		ctx.JSON(iris.Map{})
+	} else {
+		ctx.JSON(results[0])
 	}
-	var city db.City
-	var province db.Province
-	var district db.District
-
-	pid := address.ProvinceID
-	cid := address.CityID
-	did := address.DistrictID
-	var results Result
-	//db.Driver.Select("city","province","district").Where("id=?,id=?,id=?",city,province,district).Scan(&names)
-	db.Driver.Table("city, province, district ").Debug().Select("city.name, province.name ,district.name").Where("province.id = city.province_id, city.id = district.city_id, city.id = ?, province.id = ?, district.id = ?", cid, pid, did).Scan(&results)
-
-	data := paramsUtils.ModelToDict(address, []string{"ID", "ProvinceID", "CountryId", "CityID",
-		"DistrictID", "Detail", "Name", "Phone"})
-	data["city_name"] = city.Name
-	data["province_name"] = province.Name
-	data["district_name"] = district.Name
-	ctx.JSON(data)
 }
 
 func ListAddress(ctx iris.Context, auth authbase.AuthAuthorization) {
