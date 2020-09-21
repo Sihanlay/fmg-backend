@@ -122,7 +122,6 @@ func Login(c iris.Context, auth authbase.AuthAuthorization) {
 
 	if mode == "client" {
 		code := params.Str("js_code", "js_code") //  获取code
-		// 根据code获取 openID 和 session_key
 		wxLoginResp, err := Wxlogin(code)
 		fmt.Println(wxLoginResp.ErrCode)
 		fmt.Println(wxLoginResp.ErrMsg)
@@ -134,6 +133,8 @@ func Login(c iris.Context, auth authbase.AuthAuthorization) {
 			panic(AccountException.AccountNotFount())
 			return
 		}
+
+		// 根据code获取 openID 和 session_key
 
 		//判断openid是否存在数据库
 		// 没有就创建model保存登录态
@@ -147,6 +148,7 @@ func Login(c iris.Context, auth authbase.AuthAuthorization) {
 
 		} else {
 			token := auth.SetCookie(account.Id)
+			auth.IsLogin()
 			c.JSON(iris.Map{
 				"id":    account.Id,
 				"token": token,

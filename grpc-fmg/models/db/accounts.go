@@ -19,11 +19,11 @@ type Account struct {
 	//微信号
 	WXid string `json:"wxid" gorm:"not null"`
 
-	//积分
-	Usrscores Scores `json:"-" gorm:"ForeignKey:AccountId"`
+	////积分
+	//Usrscores Scores `json:"-" gorm:"ForeignKey:AccountId"`
 
-	//卡券
-	Usrcard []Cards `json:"-" gorm:"ForeignKey:AccountId"`
+	////卡券
+	//Usrcard []Cards `json:"-" gorm:"ForeignKey:AccountId"`
 
 	//生日
 	Birthday int64 `json:"birthday"`

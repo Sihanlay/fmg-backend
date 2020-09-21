@@ -29,6 +29,7 @@ func RegisterAccountRouters(app *iris.Application) {
 	addressRouter.Get("/{uid:int}", hero.Handler(address.MGetAddress))
 	addressRouter.Put("/{aid:int}", hero.Handler(address.PutAddress))
 	addressRouter.Get("/list", hero.Handler(address.ListAddress))
+	addressRouter.Get("/get/{aid:int}", hero.Handler(address.GetAddress))
 	addressRouter.Delete("/delete/{aid:int}", hero.Handler(address.DeleteAddress))
 
 	//购物车路由
