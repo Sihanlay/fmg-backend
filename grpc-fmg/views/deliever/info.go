@@ -11,18 +11,21 @@ func CreatDelivery(ctx iris.Context, auth authbase.AuthAuthorization) {
 
 	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
 
-	order_code := params.Int("order_code", "order_code")
-	delivery_corp_name := params.Str("delivry_corp_name", "delivery_corp_name")
-	delivery_sheet_code := params.Int("delivry_sheet_code", "delivery_sheet_code")
-
-	invoice_status := params.Int("invoice_status", "invoice_status")
+	orderCode := params.Int("order_code", "order_code")
+	deliveryCorpName := params.Str("delivry_corp_name", "delivery_corp_name")
+	deliverySheetCode := params.Int("delivry_sheet_code", "delivery_sheet_code")
+	taskId := params.Int(`task_id`,"任务id")
+	receiveCode := params.Str("receive_code","取件码")
+	invoiceStatus := params.Int("invoice_status", "invoice_status")
 
 	var delievery db.Delivery
 	delievery = db.Delivery{
-		OrderCode: order_code,
-		DeliveryCorpName: delivery_corp_name,
-		DeliverySheetCode: delivery_sheet_code,
-		InvoiceStatus: invoice_status,
+		OrderCode: orderCode,
+		DeliveryCorpName: deliveryCorpName,
+		DeliverySheetCode: deliverySheetCode,
+		InvoiceStatus: invoiceStatus,
+		TaskId: taskId,
+		ReceiveCode: receiveCode,
 	}
 
 	db.Driver.Create(&delievery)

@@ -3,12 +3,11 @@ package address
 import (
 	_ "context"
 	"fmt"
+	"github.com/kataras/iris"
 	authbase "grpc-demo/core/auth"
 	accountException "grpc-demo/exceptions/account"
 	"grpc-demo/models/db"
 	paramsUtils "grpc-demo/utils/params"
-
-	"github.com/kataras/iris"
 
 	//"encoding/json"
 	//"errors"
@@ -20,37 +19,31 @@ import (
 	//"strings"
 )
 
-type name struct {
-	city     db.City
-	province db.Province
-	district db.District
+type Result struct {
+	CityName     string `json:"city_name"`
+	ProvinceName string `json:"province_name"`
+	DistrictName  string `json:"district_name"`
 }
 
 func MGetAddress(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
 
 	var addresses []db.Address
-	var city db.City
-	var province db.Province
-	var district db.District
+	//var results []Result
 	db.Driver.Where("account_id = ?", uid).Find(&addresses)
+
 
 	data := make([]interface{}, 0, len(addresses))
 	for _, address := range addresses {
 		func(data *[]interface{}) {
-			pid := address.ProvinceID
-			cid := address.CityID
-			did := address.DistrictID
+			aid := address.ID
+
 			//db.Driver.Select("city","province","district").Where("id=?,id=?,id=?",city,province,district).Scan(&names)
-			db.Driver.GetOne("city", cid, &city)
-			db.Driver.GetOne("province", pid, &province)
-			db.Driver.GetOne("district", did, &district)
+			names := GetAddressStr(aid)
 			info := paramsUtils.ModelToDict(address, []string{"ID", "ProvinceID", "CountryId", "CityID",
 				"DistrictID", "Detail", "Name", "Phone"})
-
-			info["city_name"] = city.Name
-			info["province_name"] = province.Name
-			info["district_name"] = district.Name
-
+			info["city_name"] = names.CityName
+			info["province_name"] = names.ProvinceName
+			info["district_name"] = names.DistrictName
 			*data = append(*data, info)
 			defer func() {
 				recover()
@@ -61,34 +54,42 @@ func MGetAddress(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
 
 }
 
-type Result struct {
-	CityName     string `json:"city_name"`
-	ProvinceName string `json:"province_name"`
-	DistricName  string `json:"distric_name"`
-}
 
-func GetAddress(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
+func GetAddressStr( aid int) *Result {
 	var address db.Address
-	db.Driver.Where("id = ?", aid).First(&address)
-	/*
+	//db.Driver.Where("id = ?", aid).First(&address)
+
 		err := db.Driver.GetOne("address", aid, &address)
 		if err != nil {
 			fmt.Print(err)
 			panic(accountException.AddressNotFount())
 		}
-	*/
-
-	var results []Result
-	db.Driver.Table("city, province, district").Debug().Select("city.name as city_name, province.name as province_name ,district.name as distric_name").Where("province.id = ? and city.id = ? and district.id = ?", address.ProvinceID, address.CityID, address.DistrictID).Find(&results)
+		results :=Result{}
+	db.Driver.Table("city, province, district").Debug().Select("city.name as city_name, province.name as province_name ,district.name as district_name").Where("province.id = ? and city.id = ? and district.id = ?", address.ProvinceID, address.CityID, address.DistrictID).Find(&results)
 	fmt.Println(results)
 
-	if len(results) < 1 {
-		ctx.JSON(iris.Map{})
-	} else {
-		ctx.JSON(results[0])
-	}
-}
+	//if len(results) < 1 {
+	//	ctx.JSON(iris.Map{})
+	//} else {
+	//	ctx.JSON(results[0])
+	//}
+	return &results
 
+}
+func GetAddress(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
+	var address db.Address
+	db.Driver.Where("id = ?", aid).First(&address)
+	names := GetAddressStr(aid)
+	info := paramsUtils.ModelToDict(address, []string{"ID", "ProvinceID", "CountryId", "CityID",
+		"DistrictID", "Detail", "Name", "Phone"})
+
+	info["city_name"] = names.CityName
+	info["province_name"] = names.ProvinceName
+	info["district_name"] = names.DistrictName
+
+	ctx.JSON(info)
+
+}
 func ListAddress(ctx iris.Context, auth authbase.AuthAuthorization) {
 
 	if country_id := ctx.URLParamIntDefault("country_id", 0); country_id != 0 {
@@ -170,15 +171,15 @@ func PutAddress(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
 		panic(accountException.AddressNotFount())
 	}
 	if params.Has("city_id") {
-		newCity := params.Int("city_id", "新地址")
+		newCity := params.Int("city_id", "新城市")
 		address.CityID = newCity
 	}
 	if params.Has("name") {
-		name := params.Str("name", "新地址")
+		name := params.Str("name", "新名字")
 		address.Name = name
 	}
 	if params.Has("district_id") {
-		district_id := params.Int("district_id", "新地址")
+		district_id := params.Int("district_id", "新地区")
 		address.DistrictID = district_id
 	}
 	if params.Has("phone") {
@@ -190,7 +191,7 @@ func PutAddress(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
 		address.Detail = detail
 	}
 	if params.Has("phone") {
-		phone := params.Str("phone", "新地址")
+		phone := params.Str("phone", "新手机")
 		address.Phone = phone
 	}
 	db.Driver.Save(&address)
@@ -202,10 +203,12 @@ func PutAddress(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
 }
 
 func DeleteAddress(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
-	var address db.AccountCar
+	var address db.Address
 	if err := db.Driver.GetOne("address", aid, &address); err == nil {
 
 		db.Driver.Delete(address)
+	}else{
+		panic(accountException.AddressNotFount())
 	}
 
 	ctx.JSON(iris.Map{

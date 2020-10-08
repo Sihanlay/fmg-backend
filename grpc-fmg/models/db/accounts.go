@@ -152,10 +152,8 @@ type AccountCar struct {
 	Id int `gorm:"primary_key" json:"id"`
 
 	AccountId int     `json:"account_id" `
-	Account   Account `json:"-" gorm:"ForeignKey:AccountId"`
 
 	GoodsId int   `json:"goods_id"`
-	Goods   Goods `json:"-" gorm:"ForeignKey:GoodsId"`
 
 	GoodsCount int `json:"goods_count" gorm:"default:0"`
 

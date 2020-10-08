@@ -5,6 +5,7 @@ import (
 	"github.com/kataras/iris/hero"
 	"grpc-demo/views/account"
 	"grpc-demo/views/address"
+	"grpc-demo/views/comment"
 )
 
 func RegisterAccountRouters(app *iris.Application) {
@@ -38,4 +39,12 @@ func RegisterAccountRouters(app *iris.Application) {
 	accountCarRouter.Post("/_mget/{uid:int}", hero.Handler(account.MgetAccountCar))
 	accountCarRouter.Delete("/delete/{cid:int}", hero.Handler(account.DeleteGoodsCar))
 	accountCarRouter.Put("/put/{cid:int}", hero.Handler(account.PutAccountCar))
+
+	//评价路由
+	commentRouter := app.Party("comment/info")
+	commentRouter.Post("/{uid:int}", hero.Handler(comment.CreatComment))
+	commentRouter.Get("/get/{uid:int}", hero.Handler(comment.GetComment))
+	commentRouter.Put("/put/{cid:int}", hero.Handler(comment.PutComment))
+	commentRouter.Delete("/delete/{cid:int}", hero.Handler(comment.DeleteComment))
+	commentRouter.Get("/_mget/{uid:int}", hero.Handler(comment.MgetComment))
 }

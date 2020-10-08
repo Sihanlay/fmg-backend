@@ -63,7 +63,7 @@ func MgetAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, uid int){
 
 func PutAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, cid int) {
 	var car db.AccountCar
-	if err := db.Driver.GetOne("account_car", cid, &car); err != nil {
+	if err := db.Driver.GetOne("account_car",cid,&car); err != nil {
 		panic(accountException.AccountCarNotFount())
 	}
 
@@ -81,9 +81,6 @@ func PutAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, cid int) {
 	ctx.JSON(iris.Map{
 		"id": car.Id,
 	})
-
-
-
 
 }
 

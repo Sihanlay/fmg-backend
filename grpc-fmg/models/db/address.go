@@ -3,22 +3,22 @@ package db
 //地址
 type Address struct {
 	ID        int     `gorm:"primary_key" json:"id"`
-	Account   Account `json:"account" gorm:"ForeignKey:Account"`
+
 	AccountId int     `json:"account_id"`
 	//详细地址
 	Detail string `json:"name" gorm:"not null;type:text"`
 
 	//国
-	Country   Country `json:"country" gorm:"ForeignKey:CountryId"`
+
 	CountryId int     `json:"country_id"`
 	//省
-	Province   Province `json:"Province" gorm:"ForeignKey:ProvinceID"`
+
 	ProvinceID int      `json:"province_id"`
 	//城市id
-	City   City `json:"City" gorm:"ForeignKey:CityID"`
+
 	CityID int  `json:"city_id"`
 
-	District   District `json:"District" gorm:"ForeignKey:DistrictID"`
+
 	DistrictID int      `json:"District"`
 
 	Phone string `json:"phone"`

@@ -14,4 +14,8 @@ type Delivery struct {
 
 	InvoiceStatus int `json:"invoice_status"`
 
+	TaskId int `json:"task_id"`
+
+	ReceiveCode string `json:"receive_code"`
+
 }
