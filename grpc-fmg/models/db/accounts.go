@@ -151,9 +151,11 @@ type Cards struct {
 type AccountCar struct {
 	Id int `gorm:"primary_key" json:"id"`
 
-	AccountId int     `json:"account_id" `
+	DeliveryKind int `json:"delivery_kind"`
 
-	GoodsId int   `json:"goods_id"`
+	AccountId int `json:"account_id" `
+
+	GoodsId int `json:"goods_id"`
 
 	GoodsCount int `json:"goods_count" gorm:"default:0"`
 

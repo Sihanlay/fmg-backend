@@ -49,6 +49,7 @@ Conn:
 
 	Driver.AutoMigrate(
 		&Account{}, &Address{}, &AccountCar{}, &Delivery{},
+		&Comment{},
 	)
 }
 

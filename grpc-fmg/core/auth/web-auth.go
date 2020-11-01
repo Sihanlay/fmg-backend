@@ -1,6 +1,7 @@
 package authbase
 
 import (
+	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/sessions"
 	"grpc-demo/constants"
@@ -80,18 +81,25 @@ func (r *dAuthAuthorization) loadFromCookie() bool {
 		recover()
 	}()
 	cookie := r.Context.GetCookie(constants.SessionName)
+	fmt.Println(cookie)
 	if cookie == "" {
 		return false
 	}
 	var cookieStruct cookieInfo
 	hash.DecodeToken(cookie, &cookieStruct)
 	if cookieStruct.ExpireTime <= time.Now().Unix() {
+		fmt.Println("1111")
+
 		return false
 	}
 	succ := r.fetchAccount(cookieStruct.AccountId)
 	if succ {
+		fmt.Println("122111")
+
 		r.isLogin = true
 	}
+	fmt.Println("1333111")
+
 	return true
 }
 

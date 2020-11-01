@@ -35,6 +35,7 @@ func RegisterAccountRouters(app *iris.Application) {
 
 	//购物车路由
 	accountCarRouter := app.Party("car/info")
+	accountCarRouter.Put("/_mset/{uid:int}", hero.Handler(account.MsetAccountCar))
 	accountCarRouter.Post("/{uid:int}/{gid:int}", hero.Handler(account.CreatAccountCar))
 	accountCarRouter.Post("/_mget/{uid:int}", hero.Handler(account.MgetAccountCar))
 	accountCarRouter.Delete("/delete/{cid:int}", hero.Handler(account.DeleteGoodsCar))
@@ -43,8 +44,8 @@ func RegisterAccountRouters(app *iris.Application) {
 	//评价路由
 	commentRouter := app.Party("comment/info")
 	commentRouter.Post("/{uid:int}", hero.Handler(comment.CreatComment))
-	commentRouter.Get("/get/{uid:int}", hero.Handler(comment.GetComment))
+	commentRouter.Get("/get/{cid:int}", hero.Handler(comment.GetComment))
 	commentRouter.Put("/put/{cid:int}", hero.Handler(comment.PutComment))
 	commentRouter.Delete("/delete/{cid:int}", hero.Handler(comment.DeleteComment))
-	commentRouter.Get("/_mget/{uid:int}", hero.Handler(comment.MgetComment))
+	commentRouter.Get("/_mget/{cid:int}", hero.Handler(comment.MgetComment))
 }
