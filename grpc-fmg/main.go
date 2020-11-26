@@ -16,6 +16,7 @@ import (
 func initRouter(app *iris.Application) {
 	views.RegisterAccountRouters(app)
 	views.DeliveryRouters(app)
+	views.RegisterNewsRouters(app)
 }
 
 func main() {

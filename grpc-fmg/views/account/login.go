@@ -63,7 +63,7 @@ func Wxlogin(js_code string) (*WXLoginResp, error) {
 func WxFirstLogin(c iris.Context, openid string) {
 
 	v := hash.GetRandomString(10)
-
+//存入缓存
 	_, _ = cache.Redis.Do(constants.DbNumberModel, "set", v, openid)
 
 	c.JSON(iris.Map{
@@ -79,10 +79,21 @@ func Register(c iris.Context, auth authbase.AuthAuthorization) {
 	key := params.Str("key", "key")
 	var account db.Account
 	openid, err := redis.String(cache.Redis.Do(constants.DbNumberModel, "get", key))
+	if err == nil && openid != "" {
+		account = db.Account{
+			OpenId: openid,
+		}
+	} else {
+		panic(AccountException.AccountNotFount())
+	}
 
 	if params.Has("city") {
 		city := params.Str("city", "city")
 		account.City = city
+	}
+	if params.Has("avator"){
+		avator := params.Str("avator", "avator")
+		account.Avator = avator
 	}
 	if params.Has("country") {
 		country := params.Str("country", "country")
@@ -96,14 +107,15 @@ func Register(c iris.Context, auth authbase.AuthAuthorization) {
 		nickname := params.Str("nickName", "nickName")
 		account.Nickname = nickname
 	}
-	if err == nil && openid != "" {
-		account = db.Account{
-			OpenId: openid,
-		}
-		db.Driver.Create(&account)
-	} else {
-		panic(AccountException.AccountNotFount())
-	}
+	//if err == nil && openid != "" {
+	//	account = db.Account{
+	//		OpenId: openid,
+	//	}
+	//	db.Driver.Create(&account)
+	//} else {
+	//	panic(AccountException.AccountNotFount())
+	//}
+	db.Driver.Create(&account)
 	token := auth.SetCookie(account.Id)
 	c.JSON(iris.Map{
 		"id":     account.Id,

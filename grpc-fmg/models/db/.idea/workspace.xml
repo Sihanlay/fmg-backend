@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="2dccd8d6-2661-4dac-8baa-fe6f63d15a5b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../../go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/../../go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/../../go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../logics/account/info.go" beforeDir="false" afterPath="$PROJECT_DIR$/../../logics/account/info.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/address.go" beforeDir="false" afterPath="$PROJECT_DIR$/address.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comment.go" beforeDir="false" afterPath="$PROJECT_DIR$/comment.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order.go" beforeDir="false" afterPath="$PROJECT_DIR$/order.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../views/account/car.go" beforeDir="false" afterPath="$PROJECT_DIR$/../../views/account/car.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../views/account/info.go" beforeDir="false" afterPath="$PROJECT_DIR$/../../views/account/info.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../views/account/login.go" beforeDir="false" afterPath="$PROJECT_DIR$/../../views/account/login.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../views/accountroute.go" beforeDir="false" afterPath="$PROJECT_DIR$/../../views/accountroute.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../views/address/address.go" beforeDir="false" afterPath="$PROJECT_DIR$/../../views/address/address.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../views/comment/info.go" beforeDir="false" afterPath="$PROJECT_DIR$/../../views/comment/info.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../views/deliever/info.go" beforeDir="false" afterPath="$PROJECT_DIR$/../../views/deliever/info.go" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" path="C:\Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="ProjectId" id="1kK3bsRVy3T08IzRlSqPC1NfkLe" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+</project>

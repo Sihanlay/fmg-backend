@@ -1,18 +1,17 @@
 package account
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/kataras/iris"
 	authbase "grpc-demo/core/auth"
 	accountException "grpc-demo/exceptions/account"
 	"grpc-demo/models/db"
 	paramsUtils "grpc-demo/utils/params"
-	requestsUtils "grpc-demo/utils/requests"
 )
 
-func CreatAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, uid int, gid int) {
-
+func CreatAccountCar(ctx iris.Context, auth authbase.AuthAuthorization,  gid int) {
+	auth.CheckLogin()
+	uid :=auth.AccountModel().Id
 	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
 	var car db.AccountCar
 	goodsCount := params.Int("goods_count", "商品数量")
@@ -32,31 +31,32 @@ func CreatAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, uid int,
 	})
 }
 
-func MgetAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
-
+func MgetAccountCar(ctx iris.Context, auth authbase.AuthAuthorization) {
+	auth.CheckLogin()
+	uid :=auth.AccountModel().Id
 	type data struct {
 		Ids []int `json:"ids"`
 	}
 
-	type goodsInfo struct {
-		GoodId          int
-		SpecificationId int
-		Count           int
-		Delivery        int
-	}
+	//type goodsInfo struct {
+	//	GoodId          int
+	//	SpecificationId int
+	//	Count           int
+	//	Delivery        int
+	//}
 	var cars []db.AccountCar
 	db.Driver.Where("account_id = ?", uid).Find(&cars)
 
-	var goodsInfoList []goodsInfo
-	goodsIds := make([]int, 0)
+	//var goodsInfoList []goodsInfo
+	//goodsIds := make([]int, 0)
 	cardata := make([]interface{}, 0, len(cars))
-	var count int = 0
+	//var count int = 0
 	for _, car := range cars {
-		if car.IsCheck == true {
-			goodsIds = append(goodsIds, car.GoodsId)
-			goodsInfoList = append(goodsInfoList, goodsInfo{car.GoodsId, car.GoodsSpecificationId, car.GoodsCount, car.DeliveryKind})
-			count += car.GoodsCount
-		}
+		//if car.IsCheck == true {
+		////	goodsIds = append(goodsIds, car.GoodsId)
+		////	goodsInfoList = append(goodsInfoList, goodsInfo{car.GoodsId, car.GoodsSpecificationId, car.GoodsCount, car.DeliveryKind})
+		//count += car.GoodsCount
+		//}
 		func(cardata *[]interface{}) {
 			info := paramsUtils.ModelToDict(car, []string{"Id", "GoodsId", "GoodsCount", "GoodsSpecificationId",
 				"CreateTime", "GoodsSpecification", "DeliveryKind",
@@ -69,85 +69,89 @@ func MgetAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, uid int) 
 		}(&cardata)
 	}
 
-	fmt.Println(goodsIds)
-	newdata := data{}
-	newdata.Ids = goodsIds
-	fmt.Println(newdata)
-	reqdata, _ := json.Marshal(newdata)
-	fmt.Println(string(reqdata))
-	v, err := requestsUtils.Do("POST", "/goods/_mget", reqdata)
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
-	var sumPrice float32 = 0
-	var totalDiscountSum float32 = 0
-	var maxDelivery float32 = 0
-	var goodsPrice float32 = 0
-	var discountSum float32 = 0
-	for i, item := range v.([]interface{}) {
-		//fmt.Println(goodsInfoList[i].SpecificationId)
-		if float32(item.(map[string]interface{})["carriage"].(float64)) >= maxDelivery {
-			maxDelivery = float32(item.(map[string]interface{})["carriage"].(float64))
-		}
-
-		for _, gitem := range item.(map[string]interface{})["specification"].([]interface{}) {
-			if int(gitem.(map[string]interface{})["id"].(float64)) == goodsInfoList[i].SpecificationId {
-				sumPrice += float32(gitem.(map[string]interface{})["price"].(float64) * (float64(goodsInfoList[i].Count)))
-				goodsPrice += float32(gitem.(map[string]interface{})["price"].(float64) * (float64(goodsInfoList[i].Count)))
-				if (item.(map[string]interface{})["sale"].(bool)) == true {
-					totalDiscountSum += float32(gitem.(map[string]interface{})["reduced_price"].(float64) * (float64(goodsInfoList[i].Count)))
-				} else {
-					totalDiscountSum += float32(gitem.(map[string]interface{})["price"].(float64) * (float64(goodsInfoList[i].Count)))
-				}
-
-			}
-		}
-		sumPrice += maxDelivery
-		discountSum = totalDiscountSum
-		totalDiscountSum += maxDelivery
-
-	}
+	//fmt.Println(goodsIds)
+	//newdata := data{}
+	//newdata.Ids = goodsIds
+	//fmt.Println(newdata)
+	//reqdata, _ := json.Marshal(newdata)
+	//fmt.Println(string(reqdata))
+	//v, err := requestsUtils.Do("POST", "/goods/_mget", reqdata)
+	//if err != nil {
+	//	fmt.Print(err)
+	//	return
+	//}
+	//var sumPrice float32 = 0
+	//var totalDiscountSum float32 = 0
+	//var maxDelivery float32 = 0
+	//var goodsPrice float32 = 0
+	//var discountSum float32 = 0
+	//for i, item := range v.([]interface{}) {
+	//	//fmt.Println(goodsInfoList[i].SpecificationId)
+	//	if float32(item.(map[string]interface{})["carriage"].(float64)) >= maxDelivery {
+	//		maxDelivery = float32(item.(map[string]interface{})["carriage"].(float64))
+	//	}
+	//
+	//	for _, gitem := range item.(map[string]interface{})["specification"].([]interface{}) {
+	//		if int(gitem.(map[string]interface{})["id"].(float64)) == goodsInfoList[i].SpecificationId {
+	//			sumPrice += float32(gitem.(map[string]interface{})["price"].(float64) * (float64(goodsInfoList[i].Count)))
+	//			goodsPrice += float32(gitem.(map[string]interface{})["price"].(float64) * (float64(goodsInfoList[i].Count)))
+	//			if (item.(map[string]interface{})["sale"].(bool)) == true {
+	//				totalDiscountSum += float32(gitem.(map[string]interface{})["reduced_price"].(float64) * (float64(goodsInfoList[i].Count)))
+	//			} else {
+	//				totalDiscountSum += float32(gitem.(map[string]interface{})["price"].(float64) * (float64(goodsInfoList[i].Count)))
+	//			}
+	//
+	//		}
+	//	}
+	//	sumPrice += maxDelivery
+	//	discountSum = totalDiscountSum
+	//	totalDiscountSum += maxDelivery
+	//
+	//}
 
 	ctx.JSON(iris.Map{
 		"data":             cardata,
-		"count":            count,
-		"sum":              sumPrice,
-		"totalDiscountSum": totalDiscountSum,
-		"goodsPrice":       goodsPrice,
-		"discountSum":      discountSum,
+		//"sum":              sumPrice,
+		//"totalDiscountSum": totalDiscountSum,
+		//"goodsPrice":       goodsPrice,
+		//"discountSum":      discountSum,
 	})
 }
 
-func MsetAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
-
-	//路由加账户id
-	//判断购物车id是否属于此账户
-	var ids []struct {
-		Id int `json:"id"`
-	}
-
-	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
-
-	//是否全选
-	if params.Has("flag") {
-		db.Driver.Table("account_car").Debug().Select("id").Where("account_id = ?", uid).Find(&ids)
-		check_ids := make([]int, 0)
-
-		for _, id := range ids {
-			check_ids = append(check_ids, id.Id)
-		}
-
-		check := params.Bool("flag", "flag")
-		db.Driver.Table("account_car").Debug().Where("id IN (?)", check_ids).Updates(map[string]interface{}{"is_check": check})
-
-	}
-
-	ctx.JSON(iris.Map{
-		"status": "success",
-	})
-
-}
+//func MsetAccountCar(ctx iris.Context, auth authbase.AuthAuthorization) {
+//	auth.CheckLogin()
+//	uid := auth.AccountModel().Id
+//	var ids []struct {
+//		Id int `json:"id"`
+//	}
+//
+//
+//	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
+//
+//	//是否全选
+//	if params.Has("flag") {
+//
+//		db.Driver.Table("account_car").Debug().Select("id").Where("account_id = ?", uid).Find(&ids)
+//
+//		checkIds := make([]int, 0)
+//
+//		//db.Driver.Table("account_car").AddIndex("aid","account_id")
+//
+//
+//		for _, id := range ids {
+//			checkIds = append(checkIds, id.Id)
+//		}
+//
+//		check := params.Bool("flag", "flag")
+//		db.Driver.Table("account_car").Debug().Where("id IN (?)", checkIds).Updates(map[string]interface{}{"is_check": check})
+//
+//	}
+//
+//	ctx.JSON(iris.Map{
+//		"status": "success",
+//	})
+//
+//}
 
 //func MsetAccountCar(ctx iris.Context, auth authbase.AuthAuthorization,uid int){
 //
@@ -196,6 +200,7 @@ func MsetAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, uid int) 
 //
 //}
 func PutAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, cid int) {
+	auth.CheckLogin()
 	var car db.AccountCar
 	if err := db.Driver.GetOne("account_car", cid, &car); err != nil {
 		panic(accountException.AccountCarNotFount())
@@ -219,16 +224,18 @@ func PutAccountCar(ctx iris.Context, auth authbase.AuthAuthorization, cid int) {
 
 }
 
-func DeleteGoodsCar(ctx iris.Context, auth authbase.AuthAuthorization, cid int) {
-	var car db.AccountCar
-	if err := db.Driver.GetOne("accountcar", cid, &car); err == nil {
+func MDeleteGoodsCar(ctx iris.Context, auth authbase.AuthAuthorization) {
+	auth.CheckLogin()
 
-		db.Driver.Delete(car)
-	} else {
+	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
+	ids := params.List("ids","购物车列表")
+	if err := db.Driver.Debug().Exec("delete from account_car where id in (?)",ids).Error; err != nil {
+
+		fmt.Println(err)
 		panic(accountException.AccountCarNotFount())
 	}
 
 	ctx.JSON(iris.Map{
-		"id": cid,
+		"id": ids,
 	})
 }

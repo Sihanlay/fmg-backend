@@ -10,32 +10,69 @@ import (
 	paramsUtils "grpc-demo/utils/params"
 )
 
-func GetComment(ctx iris.Context, auth authbase.AuthAuthorization, oid int) {
-	var comment db.Comment
-	db.Driver.Where("order_id = ?", oid).First(&comment)
+func MGetCommentByGood(ctx iris.Context, auth authbase.AuthAuthorization,gid int) {
+	//auth.CheckLogin()
+	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
+	var comments []db.Comment
 
-	info := paramsUtils.ModelToDict(comment, []string{"ID", "OrderID", "Content", "CommentTag", "Pictures"})
+	data := make([]interface{}, 0, len(comments))
+	if params.Has("tag"){
+		tag := params.Int("tag","tag")
+		db.Driver.Where("good_id = ? and comment_tag = ?",gid,tag).Order("create_time desc").Find(&comments)
+	}else{
+		db.Driver.Where("good_id = ?",gid).Order("create_time desc").Find(&comments)
+	}
 
-	ctx.JSON(info)
+
+	for _, comment := range comments {
+		func(data *[]interface{}) {
+			v := paramsUtils.ModelToDict(comment, []string{"ID", "GoodID", "AuthorID", "Content", "CommentTag","CreateTime"})
+			var p []interface{}
+			if comment.Pictures != ""{
+				if err := json.Unmarshal([]byte(comment.Pictures), &p); err != nil {
+					fmt.Println(p)
+					panic("反序列化失败")
+				}
+				v["pictures"] = p
+			}
+
+			*data = append(*data, v)
+			defer func() {
+				recover()
+			}()
+		}(&data)
+	}
+	ctx.JSON(data)
 
 }
-func CreatComment(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
-	//auth.CheckLogin()
-	//order
-	//account_id
-	//auth.AccountModel().Id
+func CreatComment(ctx iris.Context, auth authbase.AuthAuthorization, gid int,oid int) {
+	auth.CheckLogin()
+	accountId := auth.AccountModel().Id
 
 	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
 	var comment db.Comment
-	orderId := params.Int("order_id", "订单id")
+	var order db.TestOrderDetail
+
+	err :=db.Driver.GetOne("test_order_detail",oid,&order);if err != nil{
+		panic("找不到该订单")
+	}
+
+	if order.IsComment == 0{
+		order.IsComment = 1
+	}else {
+		order.IsComment = 2
+	}
+
+	db.Driver.Save(&order)
+
 	content := params.Str("content", "内容")
 	tag := params.Int("tag", "表情")
 
 	tx := db.Driver.Begin()
 
 	comment = db.Comment{
-		AuthorID:   uid,
-		OrderID:    orderId,
+		AuthorID:   accountId,
+		GoodID:    gid,
 		Content:    content,
 		CommentTag: tag,
 	}
@@ -62,8 +99,10 @@ func CreatComment(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
 	})
 }
 
-func MgetComment(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
+func MgetComment(ctx iris.Context, auth authbase.AuthAuthorization) {
 
+	auth.CheckLogin()
+	uid := auth.AccountModel().Id
 	var comments []db.Comment
 
 	db.Driver.Where("author_id = ?", uid).Find(&comments)
@@ -71,7 +110,7 @@ func MgetComment(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
 
 	for _, comment := range comments {
 		func(data *[]interface{}) {
-			v := paramsUtils.ModelToDict(comment, []string{"ID", "OrderID", "AuthorID", "Content", "CommentTag"})
+			v := paramsUtils.ModelToDict(comment, []string{"ID", "GoodID", "AuthorID", "Content", "CommentTag"})
 			var p []interface{}
 			if err := json.Unmarshal([]byte(comment.Pictures), &p); err != nil {
 				fmt.Println(p)
@@ -89,6 +128,7 @@ func MgetComment(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
 }
 
 func PutComment(ctx iris.Context, auth authbase.AuthAuthorization, cid int) {
+	auth.CheckLogin()
 	var comment db.Comment
 	if err := db.Driver.Where("id = ?", cid).First(&comment); err != nil {
 		panic(accountException.AccountCarNotFount())
@@ -113,7 +153,7 @@ func PutComment(ctx iris.Context, auth authbase.AuthAuthorization, cid int) {
 
 func DeleteComment(ctx iris.Context, auth authbase.AuthAuthorization, cid int) {
 	var comment db.Comment
-	if err := db.Driver.GetOne("accountcar", cid, &comment); err == nil {
+	if err := db.Driver.GetOne("comment", cid, &comment); err == nil {
 
 		db.Driver.Delete(comment)
 	} else {

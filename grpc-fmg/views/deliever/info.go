@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"github.com/kataras/iris"
 	authbase "grpc-demo/core/auth"
+	deliveryExceptions "grpc-demo/exceptions/delievery"
 	"grpc-demo/models/db"
 	paramsUtils "grpc-demo/utils/params"
 	"io"
@@ -29,9 +30,14 @@ func CreatDelivery(ctx iris.Context, auth authbase.AuthAuthorization) {
 	creatTime := params.Int("create_time", "createTime")
 
 	var order db.TestChildOrder
-	db.Driver.Where("order_num=?", orderCode).Find(&order)
+	if err := db.Driver.Where("order_num=?", orderCode).Find(&order).Error;err != nil{
+		fmt.Println(err)
+		panic(deliveryExceptions.OrderNotExists())
+	}
 	params.Diff(order)
 	order.DeliveryTime = int64(creatTime)
+	order.TrackingID = deliverySheetCode
+	order.TrackingCompany = deliveryCorpName
 	db.Driver.Save(&order)
 
 	var delievery db.Delivery
@@ -106,12 +112,6 @@ type paramData struct {
 	Order    string `json:"order"`
 }
 
-//type reqBody struct {
-//	Customer string      `json:"customer"`
-//	Sign     string      `json:"sign"`
-//	Param    interface{} `json:"param"`
-//}
-
 type respBody struct {
 	Message   string        `json:"message"`
 	State     string        `json:"state"`
@@ -122,14 +122,7 @@ type respBody struct {
 	Nu        string        `json:"nu"`
 	Data      []interface{} `json:"data"`
 }
-type data struct {
-	Context  string `json:"context"`
-	Time     string `json:"time"`
-	Ftime    string `json:"ftime"`
-	Status   string `json:"status"`
-	AreaCode string `json:"area_code"`
-	AreaName string `json:"area_name"`
-}
+
 
 const (
 	customer = "4E59BDEDD9D6279BCE70939B5989DF54"

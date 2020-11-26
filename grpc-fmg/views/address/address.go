@@ -36,15 +36,17 @@ func MGetAddress(ctx iris.Context, auth authbase.AuthAuthorization, uid int) {
 	for _, address := range addresses {
 		func(data *[]interface{}) {
 			aid := address.ID
-
+			if address.IsDelete == false {
+				names := GetAddressStr(aid)
+				info := paramsUtils.ModelToDict(address, []string{"ID", "ProvinceID", "CountryId", "CityID",
+					"DistrictID", "Detail", "Name", "Phone"})
+				info["city_name"] = names.CityName
+				info["province_name"] = names.ProvinceName
+				info["district_name"] = names.DistrictName
+				*data = append(*data, info)
+			}
 			//db.Driver.Select("city","province","district").Where("id=?,id=?,id=?",city,province,district).Scan(&names)
-			names := GetAddressStr(aid)
-			info := paramsUtils.ModelToDict(address, []string{"ID", "ProvinceID", "CountryId", "CityID",
-				"DistrictID", "Detail", "Name", "Phone"})
-			info["city_name"] = names.CityName
-			info["province_name"] = names.ProvinceName
-			info["district_name"] = names.DistrictName
-			*data = append(*data, info)
+
 			defer func() {
 				recover()
 			}()
@@ -193,6 +195,10 @@ func PutAddress(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
 	if params.Has("phone") {
 		phone := params.Str("phone", "新手机")
 		address.Phone = phone
+	}
+	if params.Has("is_deleted") {
+		isDelete := params.Bool("is_deleted", "是否删除")
+		address.IsDelete = isDelete
 	}
 	db.Driver.Save(&address)
 

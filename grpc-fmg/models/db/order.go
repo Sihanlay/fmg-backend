@@ -87,7 +87,10 @@ type TestChildOrder struct {
 	GetTime int64 `json:"get_time"`
 
 	//快递单号
-	TrackingID int `json:"tracking_id" gorm:"not null;index"`
+	TrackingID string `json:"tracking_id"`
+	
+	//快递公司
+	TrackingCompany string `json:"tracking_company"`
 
 	// 创建时间
 	CreateTime int64 `json:"create_time"`
@@ -132,6 +135,9 @@ type TestOrderDetail struct {
 
 	//实付订单总额
 	//OrderAmount float32 `json:"order_amount" gorm:"not null"`
+	
+	//是否评价
+	IsComment int `json:"is_comment"`
 
 	// 创建时间
 	CreateTime int64 `json:"create_time"`
@@ -181,7 +187,10 @@ type TestChildOrderCopy struct {
 	GetTime int64 `json:"get_time"`
 
 	//快递单号
-	TrackingID int `json:"tracking_id" gorm:"not null;index"`
+	TrackingID string `json:"tracking_id"`
+
+	//快递公司
+	TrackingCompany string `json:"tracking_company"`
 
 	// 创建时间
 	CreateTime int64 `json:"create_time"`
@@ -238,7 +247,7 @@ var orderField = []string{
 
 var childOrderField = []string{
 	"ID", "OrderID", "Delivery", "ChildGoodsAmount", "ChildTotalCoupon","ChildExpFare","ChildOrderAmount", "CreateTime", "UpdateTime", "TrackingID", "DeliveryTime", "GetTime",
-	"AccountID", "AddressID", "OrderStatus", "OrderNum",
+	"AccountID", "AddressID", "OrderStatus", "OrderNum","TrackingCompany",
 }
 
 var orderDetailField = []string{
@@ -249,6 +258,9 @@ var orderDetailField = []string{
 func (o TestChildOrder) GetInfo() map[string]interface{} {
 
 	v := paramsUtils.ModelToDict(o, childOrderField)
+
+	//var address Address
+
 
 	var order TestOrder
 	//Driver.GetOne("test_order", o.OrderID, &order)

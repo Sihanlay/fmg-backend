@@ -7,8 +7,8 @@ type Comment struct {
 	// 发布人
 	AuthorID int `json:"author_id" gorm:"not null;index"`
 
-	//对应订单
-	OrderID int `json:"order_id" gorm:"not null;index"`
+	//对应商品
+	GoodID int `json:"good_id" gorm:"not null;index"`
 
 	//评价标签 1好评 2中评 3差评
 	CommentTag int `json:"comment_tag"`

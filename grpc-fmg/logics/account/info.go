@@ -1,17 +1,19 @@
 package accountLogic
 
 import (
-
 	authbase "grpc-demo/core/auth"
 	"grpc-demo/exceptions/account"
-	resourceLogic "grpc-demo/logics/resource"
 	"grpc-demo/models/db"
 	paramsUtils "grpc-demo/utils/params"
 )
 
 var field = []string{
-	"Nickname", "Email", "ID", "Role", "Phone", "PhoneValidated", "UpdateTime",
+	"Nickname", "Email", "Id", "Role", "Phone", "PhoneValidated", "UpdateTime",
 	"EmailValidated", "Avator", "Motto", "CreateTime", "Init",
+}
+
+var normalfield = []string{
+	"Nickname","Id", "Avator", "Motto","CreateTime",
 }
 
 type AccountLogic struct {
@@ -43,12 +45,18 @@ func (a *AccountLogic) AccountModel() *db.Account {
 	return &a.account
 }
 
-func (a *AccountLogic) GetAccountInfo() interface{} {
+func (a *AccountLogic) GetAccountInfo(role int) interface{} {
 
-	if len(a.account.Avator) > 0 {
-		a.account.Avator = resourceLogic.GenerateToken(a.account.Avator, -1, -1)
+	//if len(a.account.Avator) > 0 {
+	//	a.account.Avator = resourceLogic.GenerateToken(a.account.Avator, -1, -1)
+	//}
+	var data map[string]interface{}
+	if role == 1024{
+		data = paramsUtils.ModelToDict(a.account, field)
+	}else{
+		data = paramsUtils.ModelToDict(a.account, normalfield)
 	}
-	data := paramsUtils.ModelToDict(a.account, field)
+
 	//data["oauth"] = a.GetOauth()
 	return data
 }

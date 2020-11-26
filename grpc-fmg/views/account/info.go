@@ -72,6 +72,10 @@ func PutAccount(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
 		newPhoneNum := params.Str("new_phone", "新号码")
 		account.Phone = newPhoneNum
 	}
+	if params.Has("nick_name") && auth.AccountModel().Id == account.Id || auth.AccountModel().Role==1024{
+		newNickname := params.Str("nick_name", "昵称")
+		account.Nickname = newNickname
+	}
 	ctx.JSON(iris.Map{
 		"id": account.Id,
 	})
@@ -80,22 +84,36 @@ func PutAccount(ctx iris.Context, auth authbase.AuthAuthorization, aid int) {
 }
 
 func MgetAccount(ctx iris.Context, auth authbase.AuthAuthorization) {
-	auth.CheckAdmin()
 
 	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
-	logic := accountLogic.NewAccountLogic(auth)
-
 	ids := params.List("ids", "id列表")
+	logic := accountLogic.NewAccountLogic(auth)
 	data := make([]interface{}, 0)
 	accounts := db.Driver.GetMany("account", ids, db.Account{})
-	for _, account := range accounts {
-		logic.SetAccountModel(account.(db.Account))
-		func(data *[]interface{}) {
-			*data = append(*data, logic.GetAccountInfo())
-			defer func() {
-				recover()
-			}()
-		}(&data)
+	if auth.IsAdmin() == true{
+		for _, account := range accounts {
+			logic.SetAccountModel(account.(db.Account))
+			func(data *[]interface{}) {
+				*data = append(*data, logic.GetAccountInfo(1024))
+				defer func() {
+					recover()
+				}()
+			}(&data)
+		}
+	}else{
+		for _, account := range accounts {
+			logic.SetAccountModel(account.(db.Account))
+			func(data *[]interface{}) {
+				*data = append(*data, logic.GetAccountInfo(1))
+				defer func() {
+					recover()
+				}()
+			}(&data)
+		}
 	}
+
+
+
+
 	ctx.JSON(data)
 }

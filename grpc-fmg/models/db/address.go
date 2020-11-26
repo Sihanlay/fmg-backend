@@ -24,6 +24,8 @@ type Address struct {
 	Phone string `json:"phone"`
 
 	Name string `json:"name"`
+
+	IsDelete bool `json:"is_delete"`
 	// 创建时间
 	CreateTime int64 `json:"create_time"`
 
