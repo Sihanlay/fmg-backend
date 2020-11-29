@@ -49,7 +49,7 @@ Conn:
 
 	Driver.AutoMigrate(
 		&Account{}, &Address{}, &AccountCar{}, &Delivery{},
-		&Comment{},
+		&Comment{}, &Like{},&News{},&NewsAndTag{},&NewsTag{},
 	)
 }
 

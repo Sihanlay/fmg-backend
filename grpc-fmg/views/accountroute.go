@@ -45,8 +45,17 @@ func RegisterAccountRouters(app *iris.Application) {
 	commentRouter := app.Party("comment/info")
 	commentRouter.Post("/{gid:int}/{oid:int}", hero.Handler(comment.CreatComment))
 	commentRouter.Post("/get/{gid:int}", hero.Handler(comment.MGetCommentByGood))
-	commentRouter.Put("/put/{cid:int}", hero.Handler(comment.PutComment))
+	commentRouter.Put("/put/{cid:int}/{oid:int}", hero.Handler(comment.PutComment))
 	commentRouter.Delete("/delete/{cid:int}", hero.Handler(comment.DeleteComment))
 	commentRouter.Post("/_mget", hero.Handler(comment.MgetComment))
+	commentRouter.Post("/get/{uid:int}", hero.Handler(comment.MGetCommentByUser))
+
+	//收藏路由
+	LikeRouter := app.Party("account/like")
+
+	LikeRouter.Post("/creat", hero.Handler(account.CreatLike))
+	LikeRouter.Delete("/_mdel", hero.Handler(account.MDeleteLike))
+	LikeRouter.Post("/_mget", hero.Handler(account.Mgetlike))
+
 
 }

@@ -12,8 +12,10 @@ type Comment struct {
 
 	//评价标签 1好评 2中评 3差评
 	CommentTag int `json:"comment_tag"`
-	//评价内容
+	//第一次评价内容
 	Content string `json:"content"`
+	//第二次评价内容
+	SecondContent string `json:"second_content"`
 	//图片路径
 	Pictures string `json:"pictures"`
 

@@ -9,3 +9,11 @@ func AccountCarNotFount() models.RestfulAPIResult {
 		Message: "找不到该购物车",
 	}
 }
+
+func LikeNotFount() models.RestfulAPIResult {
+	return models.RestfulAPIResult{
+		Status:  false,
+		ErrCode: 5400,
+		Message: "找不到该收藏",
+	}
+}

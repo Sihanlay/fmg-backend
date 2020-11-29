@@ -12,7 +12,7 @@ import (
 	qiniuUtils "grpc-demo/utils/qiniu"
 )
 
-func CreatStudyInfo(ctx iris.Context, auth authbase.AuthAuthorization, uid int, gid int) {
+func CreatStudyInfo(ctx iris.Context, auth authbase.AuthAuthorization) {
 	auth.CheckLogin()
 	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
 	var news db.News
@@ -115,7 +115,7 @@ func DeleteStudyInfo(ctx iris.Context, auth authbase.AuthAuthorization, nid int)
 }
 
 func ListStudyInfos(ctx iris.Context, auth authbase.AuthAuthorization) {
-
+	auth.CheckLogin()
 	ctx.Text(qiniuUtils.GetUploadToken())
 
 	var lists []struct {
@@ -148,7 +148,7 @@ func ListStudyInfos(ctx iris.Context, auth authbase.AuthAuthorization) {
 
 	table.Count(&count).Offset((page - 1) * limit).Limit(limit).Select("id, update_time").Find(&lists)
 	ctx.JSON(iris.Map{
-		"goods": lists,
+		"news": lists,
 		"total": count,
 		"limit": limit,
 		"page":  page,
