@@ -1,6 +1,7 @@
 package study_info
 
 import (
+	"fmt"
 	"github.com/Masterminds/squirrel"
 	"github.com/kataras/iris"
 	authbase "grpc-demo/core/auth"
@@ -9,24 +10,32 @@ import (
 	"grpc-demo/models/db"
 	logUtils "grpc-demo/utils/log"
 	paramsUtils "grpc-demo/utils/params"
-	qiniuUtils "grpc-demo/utils/qiniu"
 )
 
 func CreatStudyInfo(ctx iris.Context, auth authbase.AuthAuthorization) {
-	auth.CheckLogin()
+	//auth.CheckLogin()
 	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
 	var news db.News
 	title := params.Str("title", "标题")
 	content := params.Str("content", "内容")
-	tagIds := params.List("tag_list","tag_list")
-	kindTagMnt(tagIds,news)
+
+	if params.Has("tag_list"){
+		tagIds := params.List("tag_list","tag_list")
+		kindTagMnt(tagIds,news)
+	}
+	if params.Has("cover"){
+		cover:= params.Str("cover","cover")
+		news.Cover = cover
+	}
+
 	news = db.News{
 		Title:           title,
 		Content: content,
 	}
-	db.Driver.Create(news)
+	db.Driver.Create(&news)
 	ctx.JSON(iris.Map{
 		"id": news.ID,
+
 	})
 }
 //标签挂载
@@ -79,18 +88,18 @@ func PutStudyInfo(ctx iris.Context, auth authbase.AuthAuthorization, cid int) {
 
 func MgetStudyInfo(ctx iris.Context, auth authbase.AuthAuthorization) {
 
-	auth.CheckLogin()
+	//auth.CheckLogin()
 	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
 	ids := params.List("ids","ids")
-	var news []db.News
+	fmt.Print(ids)
+	//news := db.Driver.GetMany("news", ids,db.News{})
+	var news[] db.News
+	db.Driver.Where("id = ? ",ids).Find(&news)
+	data := make([]interface{}, 0, len(ids))
 
-	db.Driver.Where("id = ?", ids).Find(&news)
-	data := make([]interface{}, 0, len(news))
-
-	for _, new := range news {
+	for _, item := range news {
 		func(data *[]interface{}) {
-			v := paramsUtils.ModelToDict(new, []string{"ID", "Title", "Content", "CreateTime"})
-			*data = append(*data, v)
+			*data = append(*data, paramsUtils.ModelToDict(item, []string{"ID", "Title", "Content", "CreateTime"}))
 			defer func() {
 				recover()
 			}()
@@ -115,8 +124,8 @@ func DeleteStudyInfo(ctx iris.Context, auth authbase.AuthAuthorization, nid int)
 }
 
 func ListStudyInfos(ctx iris.Context, auth authbase.AuthAuthorization) {
-	auth.CheckLogin()
-	ctx.Text(qiniuUtils.GetUploadToken())
+	//auth.CheckLogin()
+	//ctx.Text(qiniuUtils.GetUploadToken())
 
 	var lists []struct {
 		Id         int   `json:"id"`

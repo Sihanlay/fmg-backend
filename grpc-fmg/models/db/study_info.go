@@ -15,6 +15,9 @@ type News struct{
 
 	// 更新时间
 	UpdateTime int64 `json:"update_time"`
+
+	//封面
+	Cover string `json:"cover"`
 }
 
 //todo 资讯标签

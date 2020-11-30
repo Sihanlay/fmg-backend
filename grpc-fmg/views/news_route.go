@@ -13,4 +13,6 @@ func RegisterNewsRouters(app *iris.Application) {
 	NewsRouter.Get("/list", hero.Handler(study_info.ListStudyInfos))
 	NewsRouter.Put("/put/{nid:int}", hero.Handler(study_info.PutStudyInfo))
 	NewsRouter.Post("/_mget", hero.Handler(study_info.MgetStudyInfo))
+	//标签
+	NewsRouter.Post("/tag", hero.Handler(study_info.CreatStudyInfoTag))
 }

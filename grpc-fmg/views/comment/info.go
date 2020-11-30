@@ -87,13 +87,19 @@ func CreatComment(ctx iris.Context, auth authbase.AuthAuthorization, gid int,oid
 
 	params := paramsUtils.NewParamsParser(paramsUtils.RequestJsonInterface(ctx))
 	var comment db.Comment
-	var order db.TestOrderDetail
+	var orderDetail db.TestOrderDetail
+	var order db.TestOrder
 
-	err :=db.Driver.GetOne("test_order_detail",oid,&order);if err != nil{
+	err1 :=db.Driver.GetOne("test_order_detail",oid,&orderDetail);if err1 != nil{
 		panic("找不到该订单")
 	}
-
-	order.IsComment = 1
+	err2 := db.Driver.GetOne("test_order_detail", orderDetail.OrderID, &order);if err2 != nil{
+		panic("找不到该订单")
+	}
+	if order.Status == 3{
+		panic("订单已完成，无法评论")
+	}
+	orderDetail.IsComment = 1
 	db.Driver.Save(&order)
 
 
